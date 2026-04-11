@@ -107,17 +107,29 @@ def main() -> None:
     songs = load_songs(_CSV)
     print(f"Loaded songs: {len(songs)}")
 
-    # --- Three contrasting taste profiles ---
+    # --- Three distinct user preference profiles ---
+
+    # Profile A: wants high-energy pop to match a happy, upbeat mood
+    # Tests whether mood + energy together surface the right pop songs
+    # Expected top result: a pop song with high energy and happy mood
+
+    # Profile B: wants calm lofi for studying or winding down
+    # Tests the low-energy chill end of the catalog
+    # Expected top result: a lofi song with low energy and chill mood
+
+    # Profile C: wants the most intense, aggressive rock available
+    # Tests the extreme high-energy end with a specific genre requirement
+    # Expected top result: the highest-energy rock/metal song in the catalog
     profiles = {
-        "Rock Listener (Profile A)": {
-            "favorite_genre": "rock",
-            "favorite_mood":  "intense",
-            "target_energy":  0.90,
+        "High-Energy Pop": {
+            "favorite_genre": "pop",
+            "favorite_mood":  "happy",
+            "target_energy":  0.88,
             "likes_acoustic": False,
             "strict_genre":   False,
             "strict_mood":    False,
         },
-        "Lofi Listener (Profile B)": {
+        "Chill Lofi": {
             "favorite_genre": "lofi",
             "favorite_mood":  "chill",
             "target_energy":  0.38,
@@ -125,10 +137,10 @@ def main() -> None:
             "strict_genre":   False,
             "strict_mood":    False,
         },
-        "Pop Listener  (Profile C)": {
-            "favorite_genre": "pop",
-            "favorite_mood":  "happy",
-            "target_energy":  0.50,
+        "Deep Intense Rock": {
+            "favorite_genre": "rock",
+            "favorite_mood":  "intense",
+            "target_energy":  0.95,
             "likes_acoustic": False,
             "strict_genre":   False,
             "strict_mood":    False,

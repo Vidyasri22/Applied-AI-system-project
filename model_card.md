@@ -1,111 +1,87 @@
-# 🎧 Model Card: Music Recommender Simulation
-
-## 1. Model Name  
-
-Give your model a short, descriptive name.  
-Example: **VibeFinder 1.0**  
+# Model Card: Music Recommender Simulation
 
 ---
 
-## 2. Intended Use  
+## 1. Model Name
 
-Describe what your recommender is designed to do and who it is for. 
-
-Prompts:  
-
-- What kind of recommendations does it generate  
-- What assumptions does it make about the user  
-- Is this for real users or classroom exploration  
+**MoodMatch 1.0**
 
 ---
 
-## 3. How the Model Works  
+## 2. Intended Use
 
-Explain your scoring approach in simple language.  
-
-Prompts:  
-
-- What features of each song are used (genre, energy, mood, etc.)  
-- What user preferences are considered  
-- How does the model turn those into a score  
-- What changes did you make from the starter logic  
-
-Avoid code here. Pretend you are explaining the idea to a friend who does not program.
+MoodMatch suggests songs based on how you're feeling and what energy you want right now. It's a classroom project — not a replacement for Spotify. You shouldn't use it to make real decisions about what music people will enjoy.
 
 ---
 
-## 4. Data  
+## 3. How the Model Works
 
-Describe the dataset the model uses.  
+Every song gets a score based on three things: mood, energy, and genre. Mood match earns 2 points, a close energy level earns up to 4 points, and genre match earns half a point. The song with the highest total gets recommended first.
 
-Prompts:  
-
-- How many songs are in the catalog  
-- What genres or moods are represented  
-- Did you add or remove data  
-- Are there parts of musical taste missing in the dataset  
+Things like tempo, danceability, and acousticness are in the data but the scorer doesn't use them yet.
 
 ---
 
-## 5. Strengths  
+## 4. Data
 
-Where does your system seem to work well  
+The catalog has 18 songs across 15 genres and 14 moods. Most genres and moods only appear once. Lofi has three songs, pop has two, everything else has one.
 
-Prompts:  
+Most songs lean toward low energy — 10 of 18 are below 0.55. There's almost nothing in the 0.55–0.75 range, so users who want that energy level don't get great results.
 
-- User types for which it gives reasonable results  
-- Any patterns you think your scoring captures correctly  
-- Cases where the recommendations matched your intuition  
+No songs were added or removed from the starter dataset.
 
 ---
 
-## 6. Limitations and Bias 
+## 5. Strengths
 
-Where the system struggles or behaves unfairly. 
-
-Prompts:  
-
-- Features it does not consider  
-- Genres or moods that are underrepresented  
-- Cases where the system overfits to one preference  
-- Ways the scoring might unintentionally favor some users  
+When your preferences match the catalog well — like chill lofi at low energy or intense rock at high energy — the right songs show up in the right order. The scoring is also easy to explain. You can look at any result and see exactly why it ranked where it did.
 
 ---
 
-## 7. Evaluation  
+## 6. Limitations and Bias
 
-How you checked whether the recommender behaved as expected. 
+The biggest issue is mood label mismatch. The scorer only gives points for an exact word match, so "relaxed" and "chill" score zero for each other even though they mean basically the same thing.
 
-Prompts:  
+During testing, a user who wanted ambient and relaxed music got a jazz song as their top result — just because "relaxed" didn't match "chill" on the ambient song. That's the wrong answer for the wrong reason.
 
-- Which user profiles you tested  
-- What you looked for in the recommendations  
-- What surprised you  
-- Any simple tests or comparisons you ran  
-
-No need for numeric metrics unless you created some.
+On top of that, 11 of the 14 moods only have one song each. So if your mood doesn't match exactly, you lose 2 points with nowhere to recover them, and the rest of your list fills up with random energy-sorted songs.
 
 ---
 
-## 8. Future Work  
+## 7. Evaluation
 
-Ideas for how you would improve the model next.  
+We tested 11 profiles total — 3 normal ones and 8 designed to break things.
 
-Prompts:  
+The normal profiles (happy pop, chill lofi, intense rock) all returned sensible results. The adversarial ones showed some real problems:
 
-- Additional features or preferences  
-- Better ways to explain recommendations  
-- Improving diversity among the top results  
-- Handling more complex user tastes  
+- A blues/sad user with high energy got the right song at #1, then rock, EDM, and metal for the rest.
+- A user with both strict filters on (classical AND angry) got a silent empty list — no songs, no explanation.
+- The ambient/relaxed user got jazz first. The actual ambient song came second, because "relaxed" ≠ "chill."
+- A folk fan who said they dislike acoustic music got the most acoustic song in the catalog recommended first.
+
+**Why does "Gym Hero" keep showing up for happy pop users?**
+It's a pop song with high energy, so it scores well on genre and energy. But its mood is "intense," not "happy." The system doesn't treat those as opposites — it just gives zero mood points and moves on. Strong energy + right genre floats it to #3 even though it sounds like a workout song, not a birthday party song.
 
 ---
 
-## 9. Personal Reflection  
+## 8. Future Work
 
-A few sentences about your experience.  
+1. **Partial mood credit** — group similar moods like chill, relaxed, and peaceful together so close matches still earn some points instead of zero.
+2. **Use the acoustic preference** — the field is already collected from the user and every song already has an acousticness score. Just connect them in the scorer.
+3. **More songs** — most genres and moods have only one song. Adding two or three per mood would fix more problems than any weight change would.
 
-Prompts:  
+---
 
-- What you learned about recommender systems  
-- Something unexpected or interesting you discovered  
-- How this changed the way you think about music recommendation apps  
+## 9. Personal Reflection
+
+**Biggest learning moment**
+A one-word label difference completely changed who got a good recommendation. "Relaxed" vs "chill" — same feeling, different string, totally different result. That made it clear that a recommender isn't just a math problem. It's also a language problem and a data problem.
+
+**How AI tools helped — and when I had to check**
+AI helped me come up with adversarial test cases I wouldn't have thought of, like combining sad mood with high energy to see if the system would break. It also pointed out the energy gap in the catalog. But I had to verify every predicted score by actually running the code — a few were off because the tool was estimating from memory, not calculating. Always confirm against real output.
+
+**What surprised me about simple algorithms**
+The three normal profiles felt genuinely smart, even though the whole system is just three numbers added together. That was surprising. The "intelligence" came from the data being well-structured, not from anything clever in the algorithm. Real apps like Spotify are probably the same idea, just with a much bigger catalog.
+
+**What I'd try next**
+Group similar moods for partial credit, actually plug in the acoustic preference, and add more songs before touching anything else. Better data fixes more than better math does.

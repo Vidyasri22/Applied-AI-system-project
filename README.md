@@ -89,25 +89,186 @@ You can add more tests in `tests/test_recommender.py`.
 
 ## Experiments You Tried
 
-Use this section to document the experiments you ran. For example:
+**Weight shift — doubling energy, halving genre:**
+The energy multiplier was changed from ×2 to ×4 (max energy score went from +2.0 to +4.0) and the genre bonus was cut from +1.0 to +0.5. Running the three standard profiles showed identical rankings but higher raw scores. The most notable effect was that songs with a perfect energy match (like Drop Zone at energy 0.95 for a user targeting 0.95) jumped from 2.0 to 4.0 points, making pure energy-match songs much more competitive even with zero mood or genre alignment. The overall conclusion was that the original weights were more balanced.
 
-- What happened when you changed the weight on genre from 2.0 to 0.5
-- What happened when you added tempo or valence to the score
-- How did your system behave for different types of users
+**Adversarial profiles — 8 edge cases:**
+Eight profiles were designed to expose specific weaknesses: conflicting signals (sad mood + high energy), strict filters with no matching songs, mood vocabulary mismatches (relaxed vs. chill), energy floor targets (0.0), ignored acoustic preferences, tie scenarios, and cases where energy completely overrides genre. The strict filter profile returned a silent empty list. The ambient/relaxed profile returned jazz as its top result. The folk/anti-acoustic profile returned the most acoustic song in the catalog first.
+
+---
+
+### Standard Profile Outputs
+
+```
+==================================================
+  High-Energy Pop
+  Genre: pop  |  Mood: happy  |  Energy: 0.88
+==================================================
+  #1  Sunrise City by Neon Echo          Score: 4.88 / 5.00
+        • mood match: 'happy' (+2.0)
+        • energy proximity: 1.88
+        • genre match: 'pop' (+1.0)
+
+  #2  Rooftop Lights by Indigo Parade    Score: 3.76 / 5.00
+        • mood match: 'happy' (+2.0)
+        • energy proximity: 1.76
+
+  #3  Gym Hero by Max Pulse              Score: 2.90 / 5.00
+        • energy proximity: 1.90
+        • genre match: 'pop' (+1.0)
+        (note: mood is 'intense', not 'happy' — no mood points)
+
+==================================================
+  Chill Lofi
+  Genre: lofi  |  Mood: chill  |  Energy: 0.38
+==================================================
+  #1  Library Rain by Paper Lanterns     Score: 4.94 / 5.00
+        • mood match: 'chill' (+2.0)
+        • energy proximity: 1.94
+        • genre match: 'lofi' (+1.0)
+
+  #2  Midnight Coding by LoRoom          Score: 4.92 / 5.00
+        • mood match: 'chill' (+2.0)
+        • energy proximity: 1.92
+        • genre match: 'lofi' (+1.0)
+
+  #3  Spacewalk Thoughts by Orbit Bloom  Score: 3.80 / 5.00
+        • mood match: 'chill' (+2.0)
+        • energy proximity: 1.80
+        (note: ambient genre, not lofi — no genre points)
+
+==================================================
+  Deep Intense Rock
+  Genre: rock  |  Mood: intense  |  Energy: 0.95
+==================================================
+  #1  Storm Runner by Voltline           Score: 4.92 / 5.00
+        • mood match: 'intense' (+2.0)
+        • energy proximity: 1.92
+        • genre match: 'rock' (+1.0)
+
+  #2  Gym Hero by Max Pulse              Score: 3.96 / 5.00
+        • mood match: 'intense' (+2.0)
+        • energy proximity: 1.96
+        (note: pop genre, not rock — no genre points)
+
+  #3  Drop Zone by Bassline Cult         Score: 2.00 / 5.00
+        • energy proximity: 2.00 (perfect energy match)
+        (note: edm genre, energetic mood — no mood or genre points)
+```
+
+---
+
+### Adversarial Profile Outputs
+
+```
+============================================================
+  Profile 1 — Conflicting Signals (blues/sad, energy=0.9)
+  Genre: blues  |  Mood: sad  |  Energy: 0.9
+============================================================
+  #1  Empty Glass by Roy Delmar     Score: 3.86  [MOOD + GENRE MATCH]
+  #2  Storm Runner by Voltline      Score: 1.98  (energy only — rock)
+  #3  Gym Hero by Max Pulse         Score: 1.94  (energy only — pop)
+  #4  Drop Zone by Bassline Cult    Score: 1.90  (energy only — edm)
+  #5  Shatter Everything            Score: 1.86  (energy only — metal)
+
+  → Right song at #1, then pure energy filler from wrong genres.
+
+============================================================
+  Profile 2 — Strict Filter Blackhole (classical + angry, both strict)
+============================================================
+  *** EMPTY RESULT — no songs survived strict filters ***
+
+  → Silent empty list. No explanation given to the user.
+
+============================================================
+  Profile 3 — Mood Label Trap (ambient/relaxed, energy=0.3)
+  Genre: ambient  |  Mood: relaxed  |  Energy: 0.3
+============================================================
+  #1  Coffee Shop Stories (jazz, relaxed)    Score: 3.86  [MOOD MATCH]
+  #2  Spacewalk Thoughts  (ambient, chill)   Score: 2.96  [GENRE MATCH]
+  #3  Autumn Letters      (folk, melancholic) Score: 1.98
+  #4  Empty Glass         (blues, sad)        Score: 1.94
+  #5  Library Rain        (lofi, chill)       Score: 1.90
+
+  → Jazz beats ambient because "relaxed" ≠ "chill" as strings.
+
+============================================================
+  Profile 4 — Energy Floor (classical/peaceful, target=0.0)
+  Genre: classical  |  Mood: peaceful  |  Energy: 0.0
+============================================================
+  #1  Morning Prelude (classical, peaceful, 0.22)  Score: 4.56  [MOOD + GENRE]
+  #2  Spacewalk Thoughts (ambient, chill, 0.28)    Score: 1.44
+  #3  Autumn Letters     (folk, melancholic, 0.31) Score: 1.38
+  #4  Empty Glass        (blues, sad, 0.33)        Score: 1.34
+  #5  Library Rain       (lofi, chill, 0.35)       Score: 1.30
+
+  → Right song at #1 but max possible is 4.56, not 5.0 — no song
+    has energy exactly 0.0 so a perfect score is unreachable.
+
+============================================================
+  Profile 5 — Acousticness Ghost (folk/melancholic, likes_acoustic=False)
+  Genre: folk  |  Mood: melancholic  |  Energy: 0.3
+============================================================
+  #1  Autumn Letters (folk, melancholic, acousticness=0.91)  Score: 4.98
+  #2  Spacewalk Thoughts (ambient, acousticness=0.92)        Score: 1.96
+  #3  Empty Glass        (blues,  acousticness=0.83)         Score: 1.94
+  #4  Library Rain       (lofi,   acousticness=0.86)         Score: 1.90
+  #5  Coffee Shop Stories (jazz,  acousticness=0.89)         Score: 1.86
+
+  → User said no acoustic music. Top 5 are all highly acoustic.
+    likes_acoustic field is never read by the scorer.
+
+============================================================
+  Profile 6 — Tie Ambush (lofi/focused, energy=0.60)
+  Genre: lofi  |  Mood: focused  |  Energy: 0.6
+============================================================
+  #1  Focus Flow      (lofi, focused, 0.40)  Score: 4.60  [MOOD + GENRE]
+  #2  Midnight Coding (lofi, chill,   0.42)  Score: 2.64  [GENRE]
+  #3  Library Rain    (lofi, chill,   0.35)  Score: 2.50  [GENRE]
+  #4  Slow Burn       (r&b, romantic, 0.55)  Score: 1.90
+  #5  Dirt Road Memory (country, nostalgic)  Score: 1.76
+
+  → Country appears at #5 with no mood or genre match — pure
+    energy proximity floated it above other songs.
+
+============================================================
+  Profile 7 — Energy Override (rock/sad, target=0.95)
+  Genre: rock  |  Mood: sad  |  Energy: 0.95
+============================================================
+  #1  Storm Runner  (rock, intense, 0.91)   Score: 2.92  [GENRE]
+  #2  Empty Glass   (blues, sad,    0.33)   Score: 2.76  [MOOD]
+  #3  Drop Zone     (edm, energetic, 0.95)  Score: 2.00
+  #4  Gym Hero      (pop, intense,   0.93)  Score: 1.96
+  #5  Shatter Everything (metal, angry)     Score: 1.96
+
+  → No single song satisfies both rock AND sad. Genre and mood
+    pull the list in opposite directions.
+
+============================================================
+  Profile 8 — Middle Energy Attractor (hip-hop/angry, target=0.5)
+  Genre: hip-hop  |  Mood: angry  |  Energy: 0.5
+============================================================
+  #1  Shatter Everything (metal, angry,  0.97)  Score: 3.06  [MOOD]
+  #2  Crown Up           (hip-hop, confident)   Score: 2.44  [GENRE]
+  #3  Dirt Road Memory   (country, nostalgic)   Score: 1.96
+  #4  Slow Burn          (r&b, romantic)        Score: 1.90
+  #5  Midnight Coding    (lofi, chill)          Score: 1.84
+
+  → Hip-hop user gets metal at #1, country at #3, lofi at #5.
+    Middle energy target pulls in unrelated genres.
+```
 
 ---
 
 ## Limitations and Risks
 
-Summarize some limitations of your recommender.
+- The catalog has only 18 songs. Most genres and moods have just one representative, so recommendations quickly run out of real matches and fall back to energy-sorted songs from unrelated genres.
+- Mood matching is all-or-nothing. "Relaxed" and "chill" score zero for each other even though they describe the same feeling. This means the vocabulary used when tagging songs determines who gets good results, not actual musical similarity.
+- The `likes_acoustic` user preference is collected but never used in scoring. A user who dislikes acoustic music will still receive highly acoustic songs with no penalty.
+- There is an energy gap in the catalog between 0.55 and 0.75 with almost no songs. Users targeting that range are structurally under-served regardless of how the weights are set.
+- Strict filters can produce a completely empty result with no explanation shown to the user.
 
-Examples:
-
-- It only works on a tiny catalog
-- It does not understand lyrics or language
-- It might over favor one genre or mood
-
-You will go deeper on this in your model card.
+See [model_card.md](model_card.md) for a deeper analysis.
 
 ---
 
@@ -117,116 +278,9 @@ Read and complete `model_card.md`:
 
 [**Model Card**](model_card.md)
 
-Write 1 to 2 paragraphs here about what you learned:
+The most surprising thing about this project was how convincing the results felt for normal user profiles, even though the entire system is just three numbers added together. When the chill lofi user got calm, quiet songs at the top it genuinely felt like the system understood them — but it did not. It found songs whose labels and energy values happened to align numerically. That feeling of intelligence came from the data being well-structured, not from anything smart inside the algorithm.
 
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
+The clearest lesson about bias was the ambient-gets-jazz failure. A user who asked for ambient and relaxed music received a jazz recommendation first because the word "relaxed" did not exactly match the word "chill" on the ambient song. Nothing in the code was wrong. The math was correct. The unfairness came from a labeling inconsistency in the data — and that kind of invisible bias is hard to catch without deliberately trying to break your own system.
 
 
----
-
-## 7. `model_card_template.md`
-
-Combines reflection and model card framing from the Module 3 guidance. :contentReference[oaicite:2]{index=2}  
-
-```markdown
-# 🎧 Model Card - Music Recommender Simulation
-
-## 1. Model Name
-
-Give your recommender a name, for example:
-
-> VibeFinder 1.0
-
----
-
-## 2. Intended Use
-
-- What is this system trying to do
-- Who is it for
-
-Example:
-
-> This model suggests 3 to 5 songs from a small catalog based on a user's preferred genre, mood, and energy level. It is for classroom exploration only, not for real users.
-
----
-
-## 3. How It Works (Short Explanation)
-
-Describe your scoring logic in plain language.
-
-- What features of each song does it consider
-- What information about the user does it use
-- How does it turn those into a number
-
-Try to avoid code in this section, treat it like an explanation to a non programmer.
-
----
-
-## 4. Data
-
-Describe your dataset.
-
-- How many songs are in `data/songs.csv`
-- Did you add or remove any songs
-- What kinds of genres or moods are represented
-- Whose taste does this data mostly reflect
-
----
-
-## 5. Strengths
-
-Where does your recommender work well
-
-You can think about:
-- Situations where the top results "felt right"
-- Particular user profiles it served well
-- Simplicity or transparency benefits
-
----
-
-## 6. Limitations and Bias
-
-Where does your recommender struggle
-
-Some prompts:
-- Does it ignore some genres or moods
-- Does it treat all users as if they have the same taste shape
-- Is it biased toward high energy or one genre by default
-- How could this be unfair if used in a real product
-
----
-
-## 7. Evaluation
-
-How did you check your system
-
-Examples:
-- You tried multiple user profiles and wrote down whether the results matched your expectations
-- You compared your simulation to what a real app like Spotify or YouTube tends to recommend
-- You wrote tests for your scoring logic
-
-You do not need a numeric metric, but if you used one, explain what it measures.
-
----
-
-## 8. Future Work
-
-If you had more time, how would you improve this recommender
-
-Examples:
-
-- Add support for multiple users and "group vibe" recommendations
-- Balance diversity of songs instead of always picking the closest match
-- Use more features, like tempo ranges or lyric themes
-
----
-
-## 9. Personal Reflection
-
-A few sentences about what you learned:
-
-- What surprised you about how your system behaved
-- How did building this change how you think about real music recommenders
-- Where do you think human judgment still matters, even if the model seems "smart"
 
