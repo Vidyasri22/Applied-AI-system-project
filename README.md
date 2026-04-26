@@ -1,4 +1,4 @@
-# Music Recommender — RAG-Powered AI Extension
+# Music Recommender - RAG-Powered AI Extension
 
 A content-based music recommendation system extended with a natural language interface
 and Retrieval-Augmented Generation (RAG) pipeline.
@@ -13,7 +13,7 @@ and Retrieval-Augmented Generation (RAG) pipeline.
 ### What this project says about me as an AI engineer
 
 I build AI systems that are honest about their limits. This project could have been a
-slick chatbot that always sounded confident — instead I designed it as a RAG pipeline
+slick chatbot that always sounded confident - instead I designed it as a RAG pipeline
 with a visible scoring layer, a keyword fallback so it runs without an API key, and an
 evaluation harness that keeps one test deliberately failing to document a known bias.
 I care more about a system a user can push back on than one that always sounds right,
@@ -36,7 +36,7 @@ imbalance (lofi had 3 songs; most genres had 1).
 
 ---
 
-## 2. What This Extended Version Does — and Why It Matters
+## 2. What This Extended Version Does - and Why It Matters
 
 The extension adds a **RAG (Retrieval-Augmented Generation) pipeline** that lets users
 describe what they want in plain English instead of filling out a form.
@@ -55,7 +55,7 @@ What kind of music are you looking for?
 ```
 
 This matters for two reasons. First, real recommendation interfaces (Spotify, YouTube
-Music) are moving toward conversational input — understanding what "studying for finals"
+Music) are moving toward conversational input - understanding what "studying for finals"
 means in terms of genre, mood, and energy is a core NLP problem. Second, the extension
 demonstrates a complete RAG architecture: the AI response is built from documents
 retrieved from the catalog, not generated from memory. If the catalog changes, the
@@ -63,19 +63,19 @@ response changes. That grounding property is what separates RAG from a chatbot t
 simply invents answers.
 
 The system works with or without an API key. Without one, a keyword-based NLP extractor
-handles preference extraction and a template generator handles the response — no
+handles preference extraction and a template generator handles the response - no
 external dependencies required.
 
 Two ways to use it:
 
-- **Streamlit UI** (`streamlit run app.py`) — a clean visual interface that shows the
+- **Streamlit UI** (`streamlit run app.py`) - a clean visual interface that shows the
   extracted preferences as metric cards, the narrative in a grounded-output panel, and
   each ranked song as a scored card. Guardrails surface as a dedicated panel whenever
   one fires. Recommended for the walkthrough.
-- **CLI** (`python src/main.py`) — a terminal-only version that runs the same pipeline
+- **CLI** (`python src/main.py`) - a terminal-only version that runs the same pipeline
   and is useful for scripted / headless testing.
 
-Both surfaces call the same extractor, retriever, generator, and guardrails — the UI
+Both surfaces call the same extractor, retriever, generator, and guardrails - the UI
 is a display layer, not a second pipeline.
 
 ---
@@ -159,7 +159,7 @@ HUMAN & TESTING CHECKPOINTS
 
 | Component | File | Role |
 |---|---|---|
-| Streamlit UI | `app.py` | Visual interface — wraps the same pipeline as a web app |
+| Streamlit UI | `app.py` | Visual interface - wraps the same pipeline as a web app |
 | CLI entry | `src/main.py` | Terminal entry; picks Classic or AI mode at startup |
 | Preference Extractor | `src/ai_recommender.py` | Keyword NLP scan or Groq Llama function calling |
 | Retriever | `src/recommender.py` | Scores all 18 songs, returns top-k |
@@ -167,11 +167,11 @@ HUMAN & TESTING CHECKPOINTS
 | Catalog | `data/songs.csv` | 18 songs, 10 audio features each |
 | Logger / Guardrails | `src/ai_recommender.py` | Energy clamping, fallback chain, empty-result check, log file |
 | Unit tests | `tests/test_recommender.py` | pytest — OOP interface correctness |
-| Bias tests | `src/adversarial_test.py` | 8 adversarial profiles — human-reviewed |
+| Bias tests | `src/adversarial_test.py` | 8 adversarial profiles - human-reviewed |
 
 The key design insight: **all three steps share a strict boundary**. The extractor only
 produces structured preferences. The retriever only reads the catalog and returns scored
-songs. The generator only writes a narrative from what retrieval gave it — it cannot
+songs. The generator only writes a narrative from what retrieval gave it - it cannot
 invent songs. This is what makes the system RAG rather than a chatbot.
 
 ---
@@ -181,18 +181,18 @@ invent songs. This is what makes the system RAG rather than a chatbot.
 ### Prerequisites
 
 - Python 3.10 or higher
-- A Groq API key (optional — the system runs without one)
+- A Groq API key (optional - the system runs without one)
 
 ### Installation
 
-**Step 1** — Clone the repository and enter the project folder:
+**Step 1** - Clone the repository and enter the project folder:
 
 ```bash
 git clone <repo-url>
 cd Applied-AI-system-project
 ```
 
-**Step 2** — Create and activate a virtual environment:
+**Step 2** - Create and activate a virtual environment:
 
 ```bash
 python -m venv .venv
@@ -202,24 +202,24 @@ source .venv/bin/activate        # Mac / Linux
 .venv\Scripts\Activate.ps1       # Windows PowerShell
 ```
 
-**Step 3** — Install dependencies:
+**Step 3** - Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Step 4 (AI mode only)** — Add your Groq API key to a `.env` file in the project root:
+**Step 4 (AI mode only)** - Add your Groq API key to a `.env` file in the project root:
 
 ```
 GROQ_API_KEY=gsk_your_key_here
 ```
 
 Get a free key at [console.groq.com](https://console.groq.com/).
-If you skip this step the system still runs — it uses keyword NLP instead of Groq Llama.
+If you skip this step the system still runs - it uses keyword NLP instead of Groq Llama.
 
-**Step 5** — Run the application. Two options:
+**Step 5** - Run the application. Two options:
 
-**Option A — Streamlit UI (recommended):**
+**Option A - Streamlit UI (recommended):**
 
 ```bash
 streamlit run app.py
@@ -230,7 +230,7 @@ queries, extracted preferences shown as metric cards, the grounded narrative in 
 highlighted panel, and each ranked song as a scored card. The sidebar shows whether
 you're running in Groq or keyword-fallback mode, plus a list of active guardrails.
 
-**Option B — CLI:**
+**Option B - CLI:**
 
 ```bash
 cd src
@@ -267,7 +267,7 @@ python adversarial_test.py
 
 ## 5. Sample Interactions
 
-### Classic Mode — Example
+### Classic Mode - Example
 
 **Input:** High-Energy Pop profile (genre=pop, mood=happy, energy=0.88)
 
@@ -294,7 +294,7 @@ python adversarial_test.py
 
 ---
 
-### AI Mode — Example 1 (no API key)
+### AI Mode - Example 1 (no API key)
 
 **Input:**
 ```
@@ -333,7 +333,7 @@ the mood+energy combination surfaced the three chill catalog songs at the top.
 
 ---
 
-### AI Mode — Example 2 (no API key)
+### AI Mode - Example 2 (no API key)
 
 **Input:**
 ```
@@ -365,12 +365,12 @@ What kind of music are you looking for?
 ```
 
 What happened: "moody" matched the `moody` label directly. "Late night drive" and
-"night" hints averaged to energy 0.60. The top result — a synthwave song literally
-called "Night Drive Loop" — was correct entirely because its mood label matched.
+"night" hints averaged to energy 0.60. The top result - a synthwave song literally
+called "Night Drive Loop" - was correct entirely because its mood label matched.
 
 ---
 
-### AI Mode — Example 3: Guardrail firing (no API key)
+### AI Mode - Example 3: Guardrail firing (no API key)
 
 **Input:**
 ```
@@ -398,12 +398,12 @@ What kind of music are you looking for?
 
 What happened: "angry" matched the `angry` label. "Gym" and "aggressive" both pushed
 energy above 0.9. The guardrail note fired because no single song in the catalog is
-both `angry` mood and `pop` genre — the system honestly disclosed the gap rather than
+both `angry` mood and `pop` genre - the system honestly disclosed the gap rather than
 silently returning an imperfect list.
 
 ---
 
-### AI Mode — Example 4: Groq Llama-powered (with API key)
+### AI Mode - Example 4: Groq Llama-powered (with API key)
 
 **Input:**
 ```
@@ -443,7 +443,7 @@ What kind of music are you looking for?
 
 What happened: Groq Llama extracted `mood=moody` and `energy=0.30` from "rainy" and
 "evening" context. Unlike the template response, the Groq narrative names specific songs,
-explains *why* each fits, and uses conversational language — all grounded strictly in the
+explains *why* each fits, and uses conversational language - all grounded strictly in the
 retrieved list. Retrieval was identical to the no-API path; only the narrative layer changed.
 
 ---
@@ -454,14 +454,14 @@ retrieved list. Retrieval was identical to the no-API path; only the narrative l
 
 A fine-tuned model would require a training dataset of (query → song) pairs that does
 not exist. RAG lets the system use the existing catalog as its knowledge base and
-generate responses grounded in real data — no training required, and adding songs to
+generate responses grounded in real data - no training required, and adding songs to
 `songs.csv` immediately improves recommendations without touching the model.
 
 ### Why keyword NLP as a fallback instead of requiring the API?
 
 Making the API key mandatory would exclude anyone running the project locally without
 a paid account, which is a significant barrier for a portfolio or classroom project.
-The keyword fallback produces the same retrieval results as the Groq path — only the
+The keyword fallback produces the same retrieval results as the Groq path - only the
 narrative wording differs. This means the core RAG architecture works identically in
 both modes; the fallback is not a degraded version, it is a different surface layer
 on the same pipeline.
@@ -469,8 +469,8 @@ on the same pipeline.
 ### Why keep genre as a weak signal (+1.0) instead of strengthening it?
 
 Experimentation showed that increasing the genre weight to +2.0 caused the system to
-surface off-mood songs just because they matched the genre. The original balance — mood
-and energy together worth 4 of 5 points, genre worth 1 — correctly prioritizes how a
+surface off-mood songs just because they matched the genre. The original balance - mood
+and energy together worth 4 of 5 points, genre worth 1 - correctly prioritizes how a
 song *feels* over what it is labeled. Genre is a tiebreaker, not a primary filter,
 which mirrors how real recommenders treat structural metadata.
 
@@ -478,7 +478,7 @@ which mirrors how real recommenders treat structural metadata.
 
 The `likes_acoustic` user preference is collected but not used in scoring. This was a
 deliberate choice to preserve a documented limitation from the base project for
-pedagogical transparency — it shows that the system has a known gap. In a production
+pedagogical transparency - it shows that the system has a known gap. In a production
 system this would be the first thing to fix.
 
 ### Trade-offs accepted:
@@ -544,7 +544,7 @@ extractor. No API key is required.
 | 6 | "melancholic folk acoustic guitar" | top = Autumn Letters | 1.00 | PASS |
 | 7 | "ambient relaxed background" | top genre = ambient *(known to fail)* | 0.94 | KNOWN FAIL |
 
-**Average confidence score: 0.92** — interpreted as HIGH (most queries had a clear
+**Average confidence score: 0.92** - interpreted as HIGH (most queries had a clear
 best match with a significant score gap between #1 and #2).
 
 ### Confidence scoring
@@ -557,9 +557,9 @@ confidence = (top_score / 5.0) + min(gap_between_1st_and_2nd / 1.0, 1.0) × 0.15
 
 | Range | Meaning |
 |---|---|
-| >= 0.80 | High — mood + genre + energy all aligned |
-| 0.60–0.79 | Moderate — 1–2 signals matched |
-| < 0.60 | Low — energy-only matches, catalog gap |
+| >= 0.80 | High - mood + genre + energy all aligned |
+| 0.60–0.79 | Moderate - 1–2 signals matched |
+| < 0.60 | Low - energy-only matches, catalog gap |
 
 ### Bug found during testing
 
@@ -569,34 +569,34 @@ instead of `mood=intense` and `energy=0.93`. The fix was switching all keyword m
 from `if kw in text` (substring) to `re.search(r"\b" + kw + r"\b", text)` (whole-word).
 This is documented as the `_match()` helper in `src/ai_recommender.py`.
 
-### Unit tests (`tests/test_recommender.py`) — original system
+### Unit tests (`tests/test_recommender.py`) - original system
 
 Two pytest tests cover the OOP interface:
 
-1. `test_recommend_returns_songs_sorted_by_score` — top result for a pop/happy/high-energy
+1. `test_recommend_returns_songs_sorted_by_score` - top result for a pop/happy/high-energy
    user is the pop, happy song.
-2. `test_explain_recommendation_returns_non_empty_string` — explanation method returns
+2. `test_explain_recommendation_returns_non_empty_string` - explanation method returns
    readable text.
 
 Both pass and serve as regression guards if the scoring formula changes.
 
-### Adversarial bias tests (`src/adversarial_test.py`) — 8 profiles
+### Adversarial bias tests (`src/adversarial_test.py`) - 8 profiles
 
 Human-reviewed tests designed to expose failure modes:
 
 | Profile | What it tests | Result |
 |---|---|---|
 | Conflicting signals (blues/sad + energy=0.9) | High energy override mood? | Right song at #1, energy filler at #2–5 |
-| Strict filter blackhole (classical + angry) | Silent empty result? | Empty list — no explanation shown |
+| Strict filter blackhole (classical + angry) | Silent empty result? | Empty list - no explanation shown |
 | Mood label trap (ambient/relaxed) | "relaxed" != "chill" as strings? | Jazz ranked #1 over the ambient song |
-| Energy floor (classical/peaceful, target=0.0) | Perfect score reachable? | Max 4.56 — no song has energy exactly 0.0 |
-| Acousticness ghost (folk, likes_acoustic=False) | likes_acoustic used? | Top 5 all highly acoustic — field ignored |
+| Energy floor (classical/peaceful, target=0.0) | Perfect score reachable? | Max 4.56 - no song has energy exactly 0.0 |
+| Acousticness ghost (folk, likes_acoustic=False) | likes_acoustic used? | Top 5 all highly acoustic - field ignored |
 | Tie ambush (lofi/focused, energy=0.60) | Energy float unrelated genres? | Country at #5 with no mood or genre match |
 | Energy override (rock/sad, target=0.95) | Genre vs. mood conflict? | Genre and mood pull in opposite directions |
 | Middle energy attractor (hip-hop/angry, target=0.5) | Median energy over-attract? | Metal #1, country #3, lofi #5 |
 
 **What worked well:** Standard profiles returned expected songs. Every score is
-auditable — any result can be explained in one line of arithmetic.
+auditable - any result can be explained in one line of arithmetic.
 
 **What did not work well:** Semantic mood similarity (relaxed vs. chill), thin-catalog
 genres (1 song = energy noise at positions 2–5), and the unused `likes_acoustic` field.
@@ -612,7 +612,7 @@ the algorithm. It is invisible until you construct a case designed to find it.
 
 The single most important thing this project demonstrated is that an AI system can
 produce outputs that *feel* intelligent without containing any intelligence. The three
-standard profiles returned sensible, coherent recommendations — but the entire decision
+standard profiles returned sensible, coherent recommendations - but the entire decision
 was three numbers added together. The feeling of intelligence came from well-structured
 data, not from the algorithm.
 
@@ -620,38 +620,38 @@ The RAG extension added a genuine AI layer, but it also revealed the same lesson
 higher level. The Groq Llama narrative response sounds fluent and personalized. But
 everything it says is constrained by what the retriever returned. If the retriever
 surfaces a bad catalog match, the LLM will write a convincing paragraph explaining why
-that bad match is actually good. The AI layer does not fix retrieval errors — it narrates
+that bad match is actually good. The AI layer does not fix retrieval errors - it narrates
 them. Retrieval quality is the ceiling; generation quality is the floor.
 
 ### What this project taught about bias
 
 The ambient-gets-jazz failure is the clearest example. A user asked for ambient, relaxed
 music. They received a jazz song first. Nothing in the code was wrong. The math was
-correct. The bias came from a one-word labeling inconsistency in the data — the ambient
+correct. The bias came from a one-word labeling inconsistency in the data - the ambient
 song was tagged "chill" and the user preference was "relaxed." They mean the same thing
 in English. They score zero for each other as strings.
 
 This kind of bias is nearly impossible to catch by reading the code. It only becomes
 visible when you deliberately construct a case designed to find it. Systematic
-adversarial testing is not optional in AI systems — it is how you find the failures that
+adversarial testing is not optional in AI systems - it is how you find the failures that
 the code will never show you.
 
 ### How AI tools were used during development
 
 Claude was used during the development of this extension for three things:
 
-1. **Generating adversarial test profiles** — Claude suggested edge cases like "combine
+1. **Generating adversarial test profiles** - Claude suggested edge cases like "combine
    sad mood with high energy" and "use strict filters for two categories that don't
    overlap." These were more creative and probing than the profiles I would have
    written alone, and several of them found real failures.
 
-2. **Drafting the keyword-to-mood mapping table** — Claude generated a first draft of
+2. **Drafting the keyword-to-mood mapping table** - Claude generated a first draft of
    the `_MOOD_KEYWORDS` and `_ENERGY_HINTS` dictionaries. This was useful but required
-   manual review — Claude mapped "blues" as both a genre and a mood synonym for "sad,"
+   manual review - Claude mapped "blues" as both a genre and a mood synonym for "sad,"
    which was correct musically but conflated two separate fields in the data model.
    That required a careful fix.
 
-3. **Debugging the Unicode encoding error** — When the `→` arrow character caused a
+3. **Debugging the Unicode encoding error** - When the `→` arrow character caused a
    `UnicodeEncodeError` on Windows (cp1252 encoding), Claude immediately identified the
    cause and proposed replacing it with `->`. This was correct and fast.
 
@@ -670,7 +670,7 @@ function branch that actually uses it, so the keyword-only path never touches th
 The biggest limitation is catalog size. With 18 songs and 15 genres, most genres have
 exactly one representative. Any user whose preferences land in an underrepresented genre
 will receive energy-sorted noise for positions 2 through 5. No amount of algorithmic
-tuning fixes this — it requires more songs.
+tuning fixes this - it requires more songs.
 
 The second limitation is that mood matching is still all-or-nothing in the scoring
 engine. The RAG layer helps users express themselves more naturally, but once the
@@ -680,7 +680,7 @@ embeddings) would fix this without requiring a larger model.
 
 If this project were taken further, the highest-value next step would be grouping
 semantically similar moods (chill, relaxed, peaceful → one cluster) and scoring partial
-credit for near-matches — not because it is technically interesting, but because that
+credit for near-matches - not because it is technically interesting, but because that
 single change would fix more user-facing failures than any other improvement.
 
 ---
@@ -695,7 +695,7 @@ The biggest one is **vocabulary bias**. The scorer only gives points for exact s
 matches, so "relaxed" and "chill" score zero for each other even though they mean the
 same thing. A user's experience depends more on whether their words happen to match the
 catalog's labels than on whether the music actually fits what they wanted. That's not
-fixable by tweaking weights — it needs a semantic layer like mood groupings or synonyms.
+fixable by tweaking weights - it needs a semantic layer like mood groupings or synonyms.
 
 There's also a **catalog fairness problem**. Lofi has 3 songs, but hip-hop, blues, and
 classical each have 1. Lofi users get genuinely good results. Everyone else gets one
@@ -705,7 +705,7 @@ well-served users keep engaging and under-served users leave.
 
 One I didn't expect: the **AI narrative sounds confident even when it's wrong**. During
 testing, the mood-label trap case scored 0.94 confidence and got a fluent, friendly
-response — but returned jazz when the user asked for ambient. A polished AI voice can
+response - but returned jazz when the user asked for ambient. A polished AI voice can
 make a wrong answer feel right, which is arguably more harmful than just getting it wrong
 silently.
 
@@ -713,14 +713,14 @@ silently.
 
 ### Could this AI be misused? How would you prevent it?
 
-This specific tool is pretty low-stakes — the worst case is a bad playlist. But the
+This specific tool is pretty low-stakes - the worst case is a bad playlist. But the
 underlying pattern is worth thinking about.
 
 The RAG pipeline generates persuasive, personalized narratives around whatever it
 retrieves. Apply the same architecture to medical advice or financial recommendations
 and the fluency of the response would actively suppress the user's skepticism even when
-the retrieved content is wrong. The defense I built in here — always showing the raw
-ranked list and scores alongside the narrative — is the right instinct: give users
+the retrieved content is wrong. The defense I built in here - always showing the raw
+ranked list and scores alongside the narrative - is the right instinct: give users
 enough information to push back on the AI rather than just trust it.
 
 A smaller risk is **catalog injection**: if the song list weren't fixed, someone could
@@ -743,7 +743,7 @@ lesson: a system that fails quietly is harder to debug than one that crashes lou
 
 Second, **high confidence doesn't mean correct**. The mood-label trap case had the
 second-highest confidence score in the whole suite (0.94) and returned the wrong song.
-Confidence only measures how clearly one result beats the others — it doesn't know if
+Confidence only measures how clearly one result beats the others - it doesn't know if
 any of them were actually good. That flipped how I think about the scores: useful for
 flagging low-quality results, but not trustworthy as a stamp of approval.
 
@@ -751,7 +751,7 @@ flagging low-quality results, but not trustworthy as a stamp of approval.
 
 ### AI Collaboration: one helpful suggestion, one flawed one
 
-**Helpful — the energy guardrail.** Claude suggested clamping the extracted energy value
+**Helpful - the energy guardrail.** Claude suggested clamping the extracted energy value
 to `[0.0, 1.0]` even though the tool schema already defined those as the min/max. The
 reasoning was that LLMs occasionally produce out-of-range numbers like `1.05` even with
 a schema constraint because they're generating tokens, not enforcing rules. That turned
@@ -759,10 +759,10 @@ out to be exactly right, and the one-line fix (`max(0.0, min(1.0, val))`) cost n
 It was the kind of heads-up that comes from real experience with how these models
 actually behave in practice.
 
-**Flawed — the unconditional import.** The initial suggestion put the provider import at
+**Flawed - the unconditional import.** The initial suggestion put the provider import at
 the top of `ai_recommender.py`, which is normal Python style. But it meant anyone
 without the `groq` package installed got an `ImportError` even if they only wanted the
-keyword-based path that never touches the API. The fix was lazy importing — moving it
+keyword-based path that never touches the API. The fix was lazy importing - moving it
 inside the function that actually uses it. It's a common pattern for optional
 dependencies that the AI missed because it defaulted to the most standard convention
 without thinking about whether the import was required or optional. Small thing, but a
@@ -798,11 +798,11 @@ Applied-AI-system-project/
 
 | Package | Version | Purpose |
 |---|---|---|
-| `groq` | latest | Groq Llama API (optional — keyword fallback used if absent) |
+| `groq` | latest | Groq Llama API (optional - keyword fallback used if absent) |
 | `python-dotenv` | latest | Loads `GROQ_API_KEY` from `.env` file automatically |
 | `pandas` | latest | CSV loading utilities |
 | `pytest` | latest | Unit test runner |
-| `streamlit` | latest | Web UI — served by `streamlit run app.py` |
+| `streamlit` | latest | Web UI - served by `streamlit run app.py` |
 
 See [model_card.md](model_card.md) for a detailed breakdown of known limitations and
 bias patterns.
