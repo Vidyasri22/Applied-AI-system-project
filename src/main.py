@@ -1,12 +1,11 @@
 """
 Command line runner for the Music Recommender Simulation.
 
-This file helps you quickly run and test your recommender.
-
-You will implement the functions in recommender.py:
-- load_songs
-- score_song
-- recommend_songs
+Modes
+-----
+  1  Classic mode  — runs 3 hardcoded standard profiles (no API key needed)
+  2  AI mode       — natural language input → RAG recommendation via Groq API
+                     Requires:  export GROQ_API_KEY=gsk_...
 """
 
 import os
@@ -103,23 +102,8 @@ def print_recommendations(label: str, user_prefs: dict, songs: list, k: int = 3)
         print()
 
 
-def main() -> None:
-    songs = load_songs(_CSV)
-    print(f"Loaded songs: {len(songs)}")
-
-    # --- Three distinct user preference profiles ---
-
-    # Profile A: wants high-energy pop to match a happy, upbeat mood
-    # Tests whether mood + energy together surface the right pop songs
-    # Expected top result: a pop song with high energy and happy mood
-
-    # Profile B: wants calm lofi for studying or winding down
-    # Tests the low-energy chill end of the catalog
-    # Expected top result: a lofi song with low energy and chill mood
-
-    # Profile C: wants the most intense, aggressive rock available
-    # Tests the extreme high-energy end with a specific genre requirement
-    # Expected top result: the highest-energy rock/metal song in the catalog
+def _run_classic(songs: list) -> None:
+    """Run the three hardcoded standard profiles and print results."""
     profiles = {
         "High-Energy Pop": {
             "favorite_genre": "pop",
@@ -146,9 +130,24 @@ def main() -> None:
             "strict_mood":    False,
         },
     }
-
     for label, user_prefs in profiles.items():
         print_recommendations(label, user_prefs, songs, k=3)
+
+
+def main() -> None:
+    songs = load_songs(_CSV)
+    print(f"Loaded {len(songs)} songs from catalog.")
+
+    print("\nSelect mode:")
+    print("  1  Classic — run standard profiles")
+    print("  2  AI mode — describe what you want in plain English (requires GROQ_API_KEY)")
+    choice = input("\nEnter 1 or 2: ").strip()
+
+    if choice == "2":
+        from ai_recommender import run_ai_mode
+        run_ai_mode(songs)
+    else:
+        _run_classic(songs)
 
 
 if __name__ == "__main__":

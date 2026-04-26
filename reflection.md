@@ -26,7 +26,7 @@ These two profiles are almost identical — same genre, same energy target — b
 
 The intense rock user got "Storm Runner" at the top, which is a rock song tagged as intense. That is a clean, logical result. The sad rock user also got "Storm Runner" at the top, but for a completely different reason — not because the mood matched (it does not), but because it is the only rock song in the catalog and the genre bonus pushed it over everything else.
 
-This comparison reveals that the system does not really understand the difference between a user who wants to feel pumped up versus a user who wants to feel melancholic. Both users got essentially the same recommendation list, just with different scores attached. In real life, a person who is sad and wants rock music is probably looking for something like a slow, heavy ballad — not an aggressive, fast-paced track that sounds like the soundtrack to a car chase.
+This comparison reveals that the system does not really understand the difference between a user who wants to feel pumped up versus a user who wants to feel melancholic. Both users got essentially the same recommendation list, just with different scores attached. In real life, a person who is sad and wants rock music is probably looking for something like a slow, heavy ballad not an aggressive, fast-paced track that sounds like the soundtrack to a car chase.
 
 The takeaway: when the catalog only has one song per genre, the genre match becomes a near-automatic guarantee of the top spot, regardless of whether the mood fits.
 
